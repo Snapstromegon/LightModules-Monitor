@@ -83,6 +83,7 @@ a{
 
 main .LightNode{
   background: #000;
+  width: 25rem;
   float:left;
   margin: .5rem;
   border: 0.1rem solid #888;
