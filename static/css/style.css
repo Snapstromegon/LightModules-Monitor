@@ -1,0 +1,163 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/res/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(/res/MaterialIcons-Regular.woff2) format('woff2'),
+    url(/res/MaterialIcons-Regular.woff) format('woff'),
+    url(/res/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+html {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  background-color: #000;
+  color: #fff;
+}
+
+body {
+  display: grid;
+  height: 100vh;
+  grid-template-columns: 20rem 1fr;
+  grid-template-rows: auto 1fr 10rem;
+  grid-template-areas: "header header" "aside main" "footer footer";
+}
+
+header {
+  grid-area: header;
+  display: flex;
+  flex-direction: row;
+}
+
+aside {
+  grid-area: aside;
+  overflow: auto;
+  border-right: .1rem solid #aaa;
+}
+
+main {
+  grid-area: main;
+  overflow: auto;
+}
+
+footer {
+  grid-area: footer;
+  border-top: .1rem solid #aaa;
+  background: #222;
+  overflow: auto;
+}
+
+header a {
+  display: block;
+  border: 0.5px solid;
+}
+
+a{
+  padding: 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid #888;
+  background-color: #333;
+  flex-grow: 1;
+  color: #aaa;
+  text-decoration: none;
+}
+
+.NodeGroup {
+  border: 0.1rem solid #888;
+  margin: .5rem;
+  padding: .5rem;
+  background: rgba(255,255,255,0.05);
+}
+
+.NodeGroup>div {
+  display: flex;
+  flex-wrap: wrap;
+  margin: .5rem;
+}
+
+main .LightNode{
+  background: #000;
+  float:left;
+  margin: .5rem;
+  border: 0.1rem solid #888;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  grid-template-areas: "name actions" "infos actions";
+}
+
+main .LightNode h1{
+  grid-area: name;
+  padding: 0.5rem;
+}
+
+main .LightNode .infos{
+  grid-area: infos;
+  display: grid;
+  grid-template-columns: auto auto;
+  padding: 0.5rem;
+}
+
+main .LightNode .infos>*{
+  padding: 0.2rem;
+}
+
+main .LightNode .actions{
+  grid-area: actions;
+  display: flex;
+  flex-direction: column;
+}
+
+main .LightNode .actions a{
+  padding: 0.5rem;
+  text-align: center;
+  color: #aaa;
+  background-color: #333;
+  flex-grow: 1;
+  border-bottom: 1px solid #aaa;
+}
+
+aside .LightNode {
+  display: flex;
+  padding: 0.5rem;
+  border-bottom: 0.1rem solid #888;
+  align-items: center;
+}
+
+aside .LightNode.uncertain {
+  background-color: rgba(255,255,0,0.2);
+}
+
+aside .LightNode.offline {
+  background-color: rgba(255,0,0,0.2);
+}
+
+aside .LightNode h1{
+  flex-grow: 1;
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+aside .LightNode p{
+  font-family: 'Material Icons';
+  font-size: 1.5rem;
+}
+
+.logEntry {
+  display: flex;
+  padding: 0.5rem;
+  border-bottom: 1px solid #aaa;
+}
+
+.logSource {
+  width: 10rem;
+}
+.logDate {
+  width: 5rem;
+}

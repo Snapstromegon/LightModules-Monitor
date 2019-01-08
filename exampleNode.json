@@ -1,0 +1,27 @@
+{
+  "name": "Ucl-No7-Wheel",
+  "systemInfo": {
+    "FWver": "v3.12",
+    "state": "BOOT",
+    "bat": {
+      "volt": 0.00,
+      "perc": 0
+    },
+    "rssi": {
+      "db": 0,
+      "perc": 0
+    }
+  },
+  "dmx": {
+    "set": 11,
+    "mod": 0,
+    "uni": 2,
+    "out": "off",
+    "color": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+    }
+  },
+  "msg": "ALIVE"
+}
