@@ -3,6 +3,8 @@ const express = require('express');
 const expressWs = require('express-ws');
 const path = require('path');
 
+const config = require('./config.json');
+
 const NodeMgr = require('./class/NodeMgr');
 const nodeMgr = new NodeMgr();
 
@@ -36,7 +38,7 @@ app.ws('/ws', (ws, req) => {
   webClientMgr.addClient(ws);
 });
 
-const expressServer = app.listen(8080, () => {
+const expressServer = app.listen(config.express.port, () => {
   const address = expressServer.address();
   console.log(`Express listening on port ${address.port}`);
 });
@@ -49,7 +51,11 @@ server.on('error', (err) => {
 });
 
 server.on('message', (msg, rinfo) => {
-  nodeMgr.handleData(JSON.parse(msg), rinfo);
+  try{
+    nodeMgr.handleData(JSON.parse(msg), rinfo);
+  } catch(e){
+    console.error('Invalid Client Message!', e);
+  }
 });
 
 server.on('listening', () => {
@@ -57,4 +63,4 @@ server.on('listening', () => {
   console.log(`server listening on port ${address.port}`);
 });
 
-server.bind(41234);
+server.bind(config.udp.port);

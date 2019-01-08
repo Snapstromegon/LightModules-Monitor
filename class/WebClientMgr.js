@@ -21,12 +21,16 @@ module.exports = class WebClientMgr extends EventEmitter{
   }
 
   handleClientMessage(msg){
-    const parsed = JSON.parse(msg);
-    if(parsed.type == 'command'){
-      this.emit('command', parsed.content.command, res => this.broadcast(res), parsed.content.name);
-    }
-    if(parsed.type == 'server_command'){
-      this.emit('server_command', parsed.content.command, res => this.broadcast(res));
+    try{
+      const parsed = JSON.parse(msg);
+      if(parsed.type == 'command'){
+        this.emit('command', parsed.content.command, res => this.broadcast(res), parsed.content.name);
+      }
+      if(parsed.type == 'server_command'){
+        this.emit('server_command', parsed.content.command, res => this.broadcast(res));
+      }
+    } catch(e){
+      console.log('Invalid Websocket Message', e);
     }
   }
 
