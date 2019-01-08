@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://localhost:8080/ws");
+let socket = new WebSocket(`ws://${window.location.hostname}${window.location.port? ':' + window.location.port : ''}/ws`);
 socket.addEventListener('close', _ => {
   setTimeout(_ => { socket = new WebSocket(`ws://${window.location.hostname}${window.location.port? ':' + window.location.port : ''}/ws`); }, 2000);
 });
