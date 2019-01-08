@@ -5,12 +5,10 @@ const UNCERTAIN_TIME = 10 * 1000;
 const FAILURE_TIME = 20 * 1000;
 
 module.exports = class LightNode extends EventEmitter {
-  constructor(info, from) {
+  constructor(from, info) {
     super();
 
-    this.info = info;
-
-    this.update(from);
+    this.update(from, info);
   }
 
   toJSON() {
@@ -27,24 +25,23 @@ module.exports = class LightNode extends EventEmitter {
     http.get(`http://${this.info.address}/${command}`, res => {
       if (res.statusCode !== 200) {
         const error = new Error(`Request Failed.\n Status Code: ${res.statusCode}`);
-        console.error(error.message);
         res.resume();
-        cb(error.message);
-      }else { 
+        cb(error.message, undefined);
+      } else {
         res.setEncoding('utf8');
         let rawData = '';
         res.on('data', (chunk) => { rawData += chunk; });
         res.on('end', () => {
-          cb({
-            type:'execute',
-            content:{
+          cb(undefined, {
+            type: 'execute',
+            content: {
               text: rawData,
               node: this.data.name
             }
           });
         });
       }
-    }).on('error', (e) => {});;
+    }).on('error', console.error);
   }
 
   update(from, info) {
@@ -69,14 +66,21 @@ module.exports = class LightNode extends EventEmitter {
 
   updateTimeouts() {
     this.lastUpdate = Date.now();
-    this.state = 'online';
-    if (this.updateUncertainTimeout) {
-      clearTimeout(this.updateUncertainTimeout);
-    }
-    this.updateUncertainTimeout = setTimeout(_ => this.state = 'uncertain', UNCERTAIN_TIME);
-    if (this.updateFailureTimeout) {
-      clearTimeout(this.updateFailureTimeout);
-    }
-    this.updateFailureTimeout = setTimeout(_ => this.state = 'offline', FAILURE_TIME);
+    this.setOnline();
+    this.clearTimeouts();
+    this.updateUncertainTimeout = setTimeout(this.setUncertain.bind(this), UNCERTAIN_TIME);
+    this.updateFailureTimeout = setTimeout(this.setOffline.bind(this), FAILURE_TIME);
+  }
+
+  setOnline() { this.state = 'online'; }
+
+  setUncertain() { this.state = 'uncertain' }
+
+  setOffline() { this.state = 'offline' }
+
+
+  clearTimeouts() {
+    this.updateUncertainTimeout = clearTimeout(this.updateUncertainTimeout);
+    this.updateFailureTimeout = clearTimeout(this.updateFailureTimeout);
   }
 }

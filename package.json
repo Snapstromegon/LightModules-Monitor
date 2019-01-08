@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --ui tdd --recursive > Testoutput"
+    "test": "nyc --reporter=html --reporter=text mocha --recursive",
+    "start": "node ."
   },
   "keywords": [],
   "author": "",
@@ -13,5 +14,9 @@
     "express": "^4.16.4",
     "express-ws": "^4.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0"
+  }
 }
