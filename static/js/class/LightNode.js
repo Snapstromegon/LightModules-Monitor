@@ -43,7 +43,7 @@ class LightNode {
         <div class="actions">
           <a href="javascript:command('update-pull', '${this.data.name}')">Upd pull</a>
           <a href="javascript:command('update', '${this.data.name}')">Update</a>
-          <a href="javascript:command('dmx', '${this.data.name}')">DMX</a>
+          <a href="http://${this.info.address}/dmx" target="_blank">DMX</a>
           <a href="javascript:command('test', '${this.data.name}')">LED-Test</a>
         </div>
       </div>
