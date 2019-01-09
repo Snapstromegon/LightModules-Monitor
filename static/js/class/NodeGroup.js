@@ -11,6 +11,11 @@ class NodeGroup{
     this.render();
   }
 
+  delete(){
+    this.mainElem.parentNode.removeChild(this.mainElem);
+    this.asideElem.parentNode.removeChild(this.asideElem);
+  }
+
   render(){
     this.mainElem.innerHTML = "";
     this.mainElem.classList.add('NodeGroup');
@@ -22,6 +27,7 @@ class NodeGroup{
   }
 
   update(data){
+    const knownNodes = new Set(Object.keys(this._nodes));
     for(const name in data.nodes){
       if(!(name in this._nodes)){
         switch(data.nodes[name].type){
@@ -33,7 +39,12 @@ class NodeGroup{
             break;
         }
       }
+      knownNodes.delete(name);
       this._nodes[name].update(data.nodes[name]);
+    }
+    for(const toMuch of knownNodes){
+      this._nodes[toMuch].delete();
+      delete this._nodes[toMuch];
     }
   }
 }

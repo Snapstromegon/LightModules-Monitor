@@ -27,6 +27,11 @@ class LightNode {
     this.render();
   }
 
+  delete(){
+    this.mainElem.parentNode.removeChild(this.mainElem);
+    this.asideElem.parentNode.removeChild(this.asideElem);
+  }
+
   render() {
     this.mainElem.innerHTML = `
       <div class="LightNode">

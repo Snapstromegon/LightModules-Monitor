@@ -8,6 +8,54 @@ module.exports = class NodeGroup extends EventEmitter {
     this._nodes = {};
   }
 
+  isEmpty(){
+    return Object.keys(this._nodes).length === 0;
+  }
+
+  clear(triggerUpdate = true) {
+    let cleared = 0;
+    for(const nodeName in this._nodes){
+      const node = this._nodes[nodeName];
+      if(node instanceof NodeGroup){
+        cleared += node.clear(false);
+        if(node.isEmpty()){
+          delete this._nodes[nodeName];
+        }
+      } else {
+        node.clearTimeouts();
+        delete this._nodes[nodeName];
+        cleared++;
+      }
+    }
+    if(triggerUpdate && cleared) {
+      this.emit('update');
+    }
+    return cleared;
+  }
+
+  prune(triggerUpdate = true) {
+    let pruned = 0;
+    for(const nodeName in this._nodes){
+      const node = this._nodes[nodeName];
+      if(node instanceof NodeGroup){
+        pruned += node.prune(false);
+        if(node.isEmpty()){
+          delete this._nodes[nodeName];
+        }
+      } else {
+        if(node.state != 'online'){
+          node.clearTimeouts();
+          delete this._nodes[nodeName];
+          pruned++;
+        }
+      }
+    }
+    if(triggerUpdate && pruned) {
+      this.emit('update');
+    }
+    return pruned;
+  }
+
   toJSON() {
     return {
       type: 'NodeGroup',
@@ -34,7 +82,7 @@ module.exports = class NodeGroup extends EventEmitter {
   hasNodeForPath(path) {
     const firstPart = path[0];
     if (firstPart in this._nodes) {
-      if (path) {
+      if (path.length > 1) {
         return this._nodes[firstPart].hasNodeForPath(path.slice(1));
       } else {
         return true;
@@ -69,7 +117,7 @@ module.exports = class NodeGroup extends EventEmitter {
   }
 
   findNodeForName(name, createMissing = false) {
-    if (name === '') {
+    if (!name) {
       return this;
     }
     return this.findNodeForPath(name.split('-'), createMissing);
