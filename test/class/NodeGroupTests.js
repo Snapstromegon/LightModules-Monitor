@@ -10,6 +10,20 @@ describe('/class/NodeGroup', () => {
       const uniqueName = "RANDOM NAME sdeg43tgd";
       assert.strictEqual(new NodeGroup(uniqueName).name, uniqueName);
     });
+    it('should use "NodeGroup" as default name', () => {
+      assert.strictEqual(new NodeGroup().name, 'NodeGroup');
+    });
+  });
+
+  describe('isEmpty', () => {
+    it('should return true when empty', () => {
+      assert.strictEqual(new NodeGroup().isEmpty(), true);
+    });
+    it('should return false when not empty', () => {
+      const nodeGroup = new NodeGroup();
+      nodeGroup.findNodeForName("Test", true).clearTimeouts();
+      assert.strictEqual(nodeGroup.isEmpty(), false);
+    });
   });
 
   describe('toJSON', () => {
