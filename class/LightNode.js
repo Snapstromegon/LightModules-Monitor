@@ -7,7 +7,6 @@ const FAILURE_TIME = 20 * 1000;
 module.exports = class LightNode extends EventEmitter {
   constructor(from, info) {
     super();
-
     this.update(from, info);
   }
 

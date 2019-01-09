@@ -1,4 +1,5 @@
 const assert = require('assert');
+const nock = require('nock');
 
 const LightNode = require('../../class/LightNode');
 
@@ -47,40 +48,30 @@ describe('/class/LightNode', () => {
   });
 
   describe('execute', () => {
-    let server;
-    let app;
     before(() => {
-      testNode = new LightNode({name: 'testname'}, {address: 'localhost'});
-      app = require('express')();
-      server = app.listen(80);
+      testNode = new LightNode({name: 'testname'}, {address: '127.0.0.1'});
     });
     it('should request info.address/{command} and respond with answer', async () => {
       const command = 'TestCommand3w94g5rtv8huzo7';
-      app.get('/404', (_, res) => {
-        res.status(404).end();
-      });
-      app.get('/:command', (req, res) => {
-        assert.strictEqual(req.params.command, command);
-        res.send(command);
-      });
-      await new Promise(res => {
-        testNode.execute('/404', (err, appRes) => {
+      nock('http://127.0.0.1').get('/404').reply(404);
+      nock('http://127.0.0.1').get('/'+command).reply(200, command);
+      const failPromise = await new Promise(res => {
+        testNode.execute('404', (err, appRes) => {
           assert.strictEqual(appRes, undefined);
           assert.notEqual(err, undefined);
           res();
         })
       });
-      await new Promise(res => {
+      const successPromise = await new Promise(res => {
         testNode.execute(command, (err, appRes) => {
+          assert.strictEqual(err, undefined);
           assert.strictEqual(appRes.type, 'execute');
           assert.strictEqual(appRes.content.text, command);
           assert.strictEqual(appRes.content.node, 'testname');
           res();
         })
       });
-    });
-    after(() => {
-      server.close();
+      return Promise.all([ successPromise]);
     });
   });
 
