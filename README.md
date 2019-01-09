@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/Snapstromegon/LightModules-Monitor.svg?style=svg)](https://circleci.com/gh/Snapstromegon/LightModules-Monitor)
+[![](https://img.shields.io/coveralls/:vcsType/:user/:repo.svg)](https://github.com/Snapstromegon/LightModules-Monitor)
 # LightModules-Monitor
 
 ## Install
