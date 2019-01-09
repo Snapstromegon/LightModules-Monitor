@@ -46,7 +46,7 @@ class LightNode {
           <p>${this.data.msg}</p>
         </div>
         <div class="actions">
-          <a href="javascript:command('update-pull', '${this.data.name}')">Upd pull</a>
+          <a href="javascript:command('update-pull?file=http://${window.location.hostname}/ucls/update/ESP12E_E131_DMX.bin', '${this.data.name}')">Upd pull</a>
           <a href="javascript:command('update', '${this.data.name}')">Update</a>
           <a href="http://${this.info.address}/dmx" target="_blank">DMX</a>
           <a href="javascript:command('test', '${this.data.name}')">LED-Test</a>
