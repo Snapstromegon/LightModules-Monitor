@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text --reporter=json mocha --recursive",
+    "test": "nyc --reporter=text --reporter=html mocha --recursive",
+    "coverage": "nyc report --reporter=json --reporter=text-lcov | coveralls",
     "start": "node ."
   },
   "keywords": [],
@@ -16,8 +17,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "coveralls": "^3.0.2",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0",
-    "nock": "^10.0.6"
+    "nock": "^10.0.6",
+    "nyc": "^13.1.0"
   }
 }
