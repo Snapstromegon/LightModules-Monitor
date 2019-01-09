@@ -1,5 +1,5 @@
 [![CircleCI](https://circleci.com/gh/Snapstromegon/LightModules-Monitor.svg?style=svg)](https://circleci.com/gh/Snapstromegon/LightModules-Monitor)
-<img src="https://img.shields.io/coveralls/github/badges/shields.svg" alt="coverage">
+[![Coverage Status](https://coveralls.io/repos/github/Snapstromegon/LightModules-Monitor/badge.svg?branch=master)](https://coveralls.io/github/Snapstromegon/LightModules-Monitor?branch=master)
 # LightModules-Monitor
 
 ## Install
