@@ -21,7 +21,7 @@ webClientMgr.on('server_command', (cmd, cb) => {
   console.log(`Executing: ${cmd}`);
   switch (cmd) {
     case 'stop':
-      cb({
+      cb(undefined, {
         'type': 'server_execute',
         'content': {
           'text': 'Stopping Server',
@@ -31,7 +31,7 @@ webClientMgr.on('server_command', (cmd, cb) => {
       process.exit();
       break;
     case 'clear':
-      cb({
+      cb(undefined, {
         'type': 'server_execute',
         'content': {
           'text': `Cleared ${nodeMgr.clear()} Nodes`,
@@ -41,7 +41,7 @@ webClientMgr.on('server_command', (cmd, cb) => {
       nodeMgr.clear();
       break;
     case 'prune':
-      cb({
+      cb(undefined, {
         'type': 'server_execute',
         'content': {
           'text': `Pruned ${nodeMgr.prune()} Nodes`,
@@ -49,6 +49,8 @@ webClientMgr.on('server_command', (cmd, cb) => {
         }
       });
       break;
+    default:
+      cb(new Error('unknown command: ' + cmd));
   }
 });
 

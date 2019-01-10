@@ -20,21 +20,27 @@ module.exports = class WebClientMgr extends EventEmitter{
     this.clients.delete(client);
   }
 
+  commandCallback(err, res){
+    if(!err) {
+      this.broadcast(res);
+    }
+  }
+
   handleClientMessage(msg){
     try{
       const parsed = JSON.parse(msg);
-      if(parsed.type == 'command'){
-        this.emit('command', parsed.content.command, (err, res) => {
-          if(!err) {
-            this.broadcast(res);
-          }
-        }, parsed.content.name);
+      switch(parsed.type){
+        case 'command':
+          this.emit('command', parsed.content.command, this.commandCallback.bind(this), parsed.content.name);
+          break;
+        case 'server_command':
+          this.emit('server_command', parsed.content.command, this.commandCallback.bind(this));
+          break;
       }
-      if(parsed.type == 'server_command'){
-        this.emit('server_command', parsed.content.command, res => this.broadcast(res));
-      }
+      return true;
     } catch(e){
-      console.log('Invalid Websocket Message', e);
+      console.error('Invalid Websocket Message', e);
+      return false;
     }
   }
 
@@ -45,8 +51,10 @@ module.exports = class WebClientMgr extends EventEmitter{
       for (const client of this.clients) {
         client.send(sMsg);
       }
+      return true;
     } catch (e) {
       console.error(e, msg);
+      return false;
     }
   }
 }

@@ -26,6 +26,34 @@ describe('/class/NodeGroup', () => {
     });
   });
 
+  describe('clear', () => {
+    it('should clear all childNodes and return number of cleared nodes', () => {
+      const nodeGroup = new NodeGroup();
+      nodeGroup.findNodeForName("Test", true);
+      nodeGroup.findNodeForName("Group-Test", true);
+      assert.strictEqual(nodeGroup.isEmpty(), false);
+      assert.strictEqual(nodeGroup.clear(), 2);
+      assert.strictEqual(nodeGroup.isEmpty(), true);
+    });
+  });
+
+  describe('prune', () => {
+    it('should clear all childNodes and return number of pruned nodes', () => {
+      const nodeGroup = new NodeGroup();
+      const child = nodeGroup.findNodeForName("Test", true);
+      const gChild = nodeGroup.findNodeForName("Group-Test", true);
+      assert.strictEqual(nodeGroup.isEmpty(), false);
+      assert.strictEqual(nodeGroup.prune(), 0);
+      assert.strictEqual(nodeGroup.isEmpty(), false);
+      gChild.state = "not Online";
+      assert.strictEqual(nodeGroup.prune(), 1);
+      assert.strictEqual(nodeGroup.isEmpty(), false);
+      child.state = "not Online";
+      assert.strictEqual(nodeGroup.prune(), 1);
+      assert.strictEqual(nodeGroup.isEmpty(), true);
+    });
+  });
+
   describe('toJSON', () => {
     const testFrom = { from: 'from' };
     const testInfo = { info: 'info' };
@@ -64,12 +92,12 @@ describe('/class/NodeGroup', () => {
       testNode.clearTimeouts();
     });
 
-    it('should call nodes execute with command, callback and enpty name',() => {
+    it('should call nodes execute with command, callback and enpty name', () => {
       const command = "Command";
-      const callback = () => {};
+      const callback = () => { };
       let timesExecuted = 0;
       testGroup._nodes.TestNode = {
-        execute(cmd, cb){
+        execute(cmd, cb) {
           assert.strictEqual(cmd, command);
           assert.strictEqual(cb, callback);
           timesExecuted++;
@@ -176,5 +204,5 @@ describe('/class/NodeGroup', () => {
       };
     });
   });
-  
+
 });

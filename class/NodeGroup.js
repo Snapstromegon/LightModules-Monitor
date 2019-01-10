@@ -18,9 +18,7 @@ module.exports = class NodeGroup extends EventEmitter {
       const node = this._nodes[nodeName];
       if(node instanceof NodeGroup){
         cleared += node.clear(false);
-        if(node.isEmpty()){
-          delete this._nodes[nodeName];
-        }
+        delete this._nodes[nodeName];
       } else {
         node.clearTimeouts();
         delete this._nodes[nodeName];
