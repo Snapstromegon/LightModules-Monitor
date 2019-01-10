@@ -17,4 +17,6 @@ Open config.json and set
 
 ## Run
 
+- ```npm start```
+or
 - ```node .```
