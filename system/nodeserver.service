@@ -1,0 +1,34 @@
+# Run nodeserver as system service 
+#
+# file: /etc/systemd/system/nodeserver.service
+# date: 219-01-13
+# Version 1.0
+#
+# Register the service once:
+#      sudo systemctl enable nodeserver.service
+# Start service manually
+#      sudo systemctl start nodeserver.service
+# Shjow status of service
+#      sudo systemctl status nodeserver.service
+#
+
+[Unit]
+Description=Node.js UCLS Node Server
+
+[Service]
+ExecStart=/usr/local/bin/node /home/pi/LightModules-Monitor/index.js
+# Required on some systems
+Restart=always
+# Restart service after 10 seconds if node service crashes
+RestartSec=10
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=nodejs-example
+#User=<alternate user>
+#Group=<alternate group>
+Environment=NODE_ENV=production PORT=1337
+
+[Install]
+WantedBy=multi-user.target
+
