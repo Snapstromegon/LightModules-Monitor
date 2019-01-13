@@ -20,3 +20,18 @@ Open config.json and set
 - ```npm start```
 or
 - ```node .```
+
+## Automatic launch at system start (Raspberry Pi based on Stretch)
+
+Copy script once:
+- ```sudo cp system/nodeserver.service  /etc/systemd/system```
+Register service once:
+- ```sudo systemctl enable nodeserver.service```
+
+Stop service manually :
+- ```sudo systemctl stop nodeserver.service```
+Start service manually :
+- ```sudo systemctl start nodeserver.service```
+Show status of service:
+- ```sudo systemctl status nodeserver.service```
+
