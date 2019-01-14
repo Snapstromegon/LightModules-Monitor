@@ -17,19 +17,24 @@ module.exports = class NodeGroup extends EventEmitter {
     const node = this._nodes[nodeName];
     if (node instanceof NodeGroup) {
       cleared += node.clear(false);
+      delete this._nodes[nodeName];
     } else {
       node.clearTimeouts();
+      delete this._nodes[nodeName];
       cleared++;
     }
-    delete this._nodes[nodeName];
     return cleared;
   }
 
   clear(triggerUpdate = true) {
-    return this.mapAllNodes(
-      nodeName => this.clearNode(nodeName),
-      triggerUpdate
-    );
+    let cleared = 0;
+    for (const nodeName in this._nodes) {
+      cleared += this.clearNode(nodeName);
+    }
+    if (triggerUpdate && cleared) {
+      this.emit('update');
+    }
+    return cleared;
   }
 
   pruneNode(nodeName = '') {
@@ -37,32 +42,28 @@ module.exports = class NodeGroup extends EventEmitter {
     const node = this._nodes[nodeName];
     if (node instanceof NodeGroup) {
       pruned += node.prune(false);
-    } else if (node.state != 'online') {
-      node.clearTimeouts();
-      pruned++;
-    }
-    if (node.isEmpty() || node.state != 'online') {
-      delete this._nodes[nodeName];
+      if (node.isEmpty()) {
+        delete this._nodes[nodeName];
+      }
+    } else {
+      if (node.state != 'online') {
+        node.clearTimeouts();
+        delete this._nodes[nodeName];
+        pruned++;
+      }
     }
     return pruned;
   }
 
   prune(triggerUpdate = true) {
-    return this.mapAllNodes(
-      nodeName => this.pruneNode(nodeName),
-      triggerUpdate
-    );
-  }
-
-  mapAllNodes(func, triggerUpdate) {
-    let changed = 0;
+    let pruned = 0;
     for (const nodeName in this._nodes) {
-      changed += func(nodeName);
+      pruned += this.pruneNode(nodeName);
     }
-    if (triggerUpdate && changed) {
+    if (triggerUpdate && pruned) {
       this.emit('update');
     }
-    return changed;
+    return pruned;
   }
 
   toJSON() {
@@ -76,15 +77,15 @@ module.exports = class NodeGroup extends EventEmitter {
   execute(command, cb, name) {
     let nodesToExecute = {};
     if (name) {
-      console.log(command, name);
-
       const node = this.findNodeForName(name);
-      nodesToExecute['__DEFAULT__'] = node;
+      if (node) {
+        nodesToExecute['__DEFAULT__'] = node;
+      }
     } else {
       nodesToExecute = this._nodes;
     }
     for (const name in nodesToExecute) {
-      this._nodes[name].execute(command, cb);
+      nodesToExecute[name].execute(command, cb);
     }
   }
 

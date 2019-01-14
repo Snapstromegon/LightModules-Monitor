@@ -4,10 +4,9 @@ const NodeGroup = require('../../class/NodeGroup.js');
 const LightNode = require('../../class/LightNode.js');
 
 describe('/class/NodeGroup', () => {
-
   describe('constructor', () => {
     it('should set name to the given name', () => {
-      const uniqueName = "RANDOM NAME sdeg43tgd";
+      const uniqueName = 'RANDOM NAME sdeg43tgd';
       assert.strictEqual(new NodeGroup(uniqueName).name, uniqueName);
     });
     it('should use "NodeGroup" as default name', () => {
@@ -21,7 +20,7 @@ describe('/class/NodeGroup', () => {
     });
     it('should return false when not empty', () => {
       const nodeGroup = new NodeGroup();
-      nodeGroup.findNodeForName("Test", true).clearTimeouts();
+      nodeGroup.findNodeForName('Test', true).clearTimeouts();
       assert.strictEqual(nodeGroup.isEmpty(), false);
     });
   });
@@ -29,8 +28,8 @@ describe('/class/NodeGroup', () => {
   describe('clear', () => {
     it('should clear all childNodes and return number of cleared nodes', () => {
       const nodeGroup = new NodeGroup();
-      nodeGroup.findNodeForName("Test", true);
-      nodeGroup.findNodeForName("Group-Test", true);
+      nodeGroup.findNodeForName('Test', true);
+      nodeGroup.findNodeForName('Group-Test', true);
       assert.strictEqual(nodeGroup.isEmpty(), false);
       assert.strictEqual(nodeGroup.clear(), 2);
       assert.strictEqual(nodeGroup.isEmpty(), true);
@@ -40,15 +39,16 @@ describe('/class/NodeGroup', () => {
   describe('prune', () => {
     it('should clear all childNodes and return number of pruned nodes', () => {
       const nodeGroup = new NodeGroup();
-      const child = nodeGroup.findNodeForName("Test", true);
-      const gChild = nodeGroup.findNodeForName("Group-Test", true);
+      const child = nodeGroup.findNodeForName('Test', true);
+      const gChild = nodeGroup.findNodeForName('Group-Test', true);
       assert.strictEqual(nodeGroup.isEmpty(), false);
       assert.strictEqual(nodeGroup.prune(), 0);
       assert.strictEqual(nodeGroup.isEmpty(), false);
-      gChild.state = "not Online";
+      gChild.state = 'not Online';
+      console.log(gChild.state, 'updated');
       assert.strictEqual(nodeGroup.prune(), 1);
       assert.strictEqual(nodeGroup.isEmpty(), false);
-      child.state = "not Online";
+      child.state = 'not Online';
       assert.strictEqual(nodeGroup.prune(), 1);
       assert.strictEqual(nodeGroup.isEmpty(), true);
     });
@@ -59,7 +59,7 @@ describe('/class/NodeGroup', () => {
     const testInfo = { info: 'info' };
     let testGroup;
     before(() => {
-      testGroup = new NodeGroup("test");
+      testGroup = new NodeGroup('test');
     });
     it('should return a JSON parseable object', () => {
       JSON.stringify(testGroup.toJSON());
@@ -87,14 +87,14 @@ describe('/class/NodeGroup', () => {
     let testNode;
     let testGroup;
     beforeEach(() => {
-      testGroup = new NodeGroup("Test");
-      testNode = testGroup.findNodeForName("TestNode", true);
+      testGroup = new NodeGroup('Test');
+      testNode = testGroup.findNodeForName('TestNode', true);
       testNode.clearTimeouts();
     });
 
     it('should call nodes execute with command, callback and enpty name', () => {
-      const command = "Command";
-      const callback = () => { };
+      const command = 'Command';
+      const callback = () => {};
       let timesExecuted = 0;
       testGroup._nodes.TestNode = {
         execute(cmd, cb) {
@@ -104,8 +104,8 @@ describe('/class/NodeGroup', () => {
         }
       };
       testGroup.execute(command, callback);
-      testGroup.execute(command, callback, "TestNode");
-      testGroup.execute(command, callback, "XTestNode");
+      testGroup.execute(command, callback, 'TestNode');
+      testGroup.execute(command, callback, 'XTestNode');
       assert.strictEqual(timesExecuted, 2);
     });
   });
@@ -113,67 +113,70 @@ describe('/class/NodeGroup', () => {
   describe('hasNodeForPath', () => {
     let testGroup;
     beforeEach(() => {
-      testGroup = new NodeGroup("Test");
+      testGroup = new NodeGroup('Test');
     });
 
-    it('should return false if node doesn\'t exists', () => {
-      assert.strictEqual(testGroup.hasNodeForPath(["TestNode"]), false);
+    it("should return false if node doesn't exists", () => {
+      assert.strictEqual(testGroup.hasNodeForPath(['TestNode']), false);
     });
 
     it('should return true if node exists', () => {
-      const testNode = testGroup.findNodeForName("TestNode", true);
+      const testNode = testGroup.findNodeForName('TestNode', true);
       testNode.clearTimeouts();
-      assert.strictEqual(testGroup.hasNodeForPath(["TestNode"]), true);
+      assert.strictEqual(testGroup.hasNodeForPath(['TestNode']), true);
     });
 
     it('should return true if deep node exists', () => {
-      const testNode = testGroup.findNodeForName("Group-TestNode", true);
+      const testNode = testGroup.findNodeForName('Group-TestNode', true);
       testNode.clearTimeouts();
-      assert.strictEqual(testGroup.hasNodeForPath(["Group", "TestNode"]), true);
+      assert.strictEqual(testGroup.hasNodeForPath(['Group', 'TestNode']), true);
     });
   });
 
   describe('findNodeForPath', () => {
     let testGroup;
     beforeEach(() => {
-      testGroup = new NodeGroup("Test");
+      testGroup = new NodeGroup('Test');
     });
     it('should not find not existing nodes', () => {
-      assert.strictEqual(testGroup.findNodeForPath(["notExisting"]), undefined);
+      assert.strictEqual(testGroup.findNodeForPath(['notExisting']), undefined);
     });
     it('should return itself if path is empty', () => {
       assert.strictEqual(testGroup.findNodeForPath([]), testGroup);
     });
     it('should create missing if wanted', () => {
-      const testNode = testGroup.findNodeForPath(["create"], true);
+      const testNode = testGroup.findNodeForPath(['create'], true);
       testNode.clearTimeouts();
       assert.notEqual(testNode, undefined);
-      assert.strictEqual(testGroup.hasNodeForPath(["create"]), true);
+      assert.strictEqual(testGroup.hasNodeForPath(['create']), true);
     });
     it('should not create duplicates', () => {
-      const testNode = testGroup.findNodeForPath(["create"], true);
+      const testNode = testGroup.findNodeForPath(['create'], true);
       testNode.clearTimeouts();
-      const testNodeB = testGroup.findNodeForPath(["create"], true);
+      const testNodeB = testGroup.findNodeForPath(['create'], true);
       testNodeB.clearTimeouts();
       assert.strictEqual(testNode, testNodeB);
     });
     it('should find deep nodes', () => {
-      const testNode = testGroup.findNodeForPath(["create", "this"], true);
+      const testNode = testGroup.findNodeForPath(['create', 'this'], true);
       testNode.clearTimeouts();
       assert.notEqual(testNode, undefined);
       assert.strictEqual(testGroup._nodes.create._nodes.this, testNode);
-      assert.strictEqual(testGroup.findNodeForPath(["create", "this"]), testNode);
+      assert.strictEqual(
+        testGroup.findNodeForPath(['create', 'this']),
+        testNode
+      );
     });
     it('should bubble update events', async () => {
       const updateFlat = new Promise(resolve => {
-        const testNode = testGroup.findNodeForPath(["create"], true);
+        const testNode = testGroup.findNodeForPath(['create'], true);
         testNode.clearTimeouts();
         testGroup.on('update', resolve);
         testNode.update();
         testNode.clearTimeouts();
       });
       const updateDeep = new Promise(resolve => {
-        const testNode = testGroup.findNodeForPath(["this", "create"], true);
+        const testNode = testGroup.findNodeForPath(['this', 'create'], true);
         testNode.clearTimeouts();
         testGroup.on('update', resolve);
         testNode.update();
@@ -186,7 +189,7 @@ describe('/class/NodeGroup', () => {
   describe('findNodeForName', () => {
     let testGroup;
     beforeEach(() => {
-      testGroup = new NodeGroup("Test");
+      testGroup = new NodeGroup('Test');
     });
     it('schould return itself if name is empty', () => {
       assert.strictEqual(testGroup.findNodeForName(''), testGroup);
@@ -196,7 +199,7 @@ describe('/class/NodeGroup', () => {
       assert.strictEqual(testGroup.findNodeForName(undefined), testGroup);
     });
     it('call findNodeForPath with the parsed name', () => {
-      const testName = "Test-Name";
+      const testName = 'Test-Name';
       const scndParam = Symbol();
       testGroup.findNodeForPath = (path, createMissing) => {
         assert.deepEqual(path, testName.split('-'));
@@ -204,5 +207,4 @@ describe('/class/NodeGroup', () => {
       };
     });
   });
-
 });
