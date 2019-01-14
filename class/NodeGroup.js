@@ -26,11 +26,10 @@ module.exports = class NodeGroup extends EventEmitter {
   }
 
   clear(triggerUpdate = true) {
-    let cleared = this.mapAllNodes(nodeName => this.clearNode(nodeName));
-    if (triggerUpdate && cleared) {
-      this.emit('update');
-    }
-    return cleared;
+    return this.mapAllNodes(
+      nodeName => this.clearNode(nodeName),
+      triggerUpdate
+    );
   }
 
   pruneNode(nodeName = '') {
@@ -49,19 +48,21 @@ module.exports = class NodeGroup extends EventEmitter {
   }
 
   prune(triggerUpdate = true) {
-    let pruned = this.mapAllNodes(nodeName => this.pruneNode(nodeName));
-    if (triggerUpdate && pruned) {
-      this.emit('update');
-    }
-    return pruned;
+    return this.mapAllNodes(
+      nodeName => this.pruneNode(nodeName),
+      triggerUpdate
+    );
   }
 
-  mapAllNodes(func) {
-    let pruned = 0;
+  mapAllNodes(func, triggerUpdate) {
+    let changed = 0;
     for (const nodeName in this._nodes) {
-      pruned += func(nodeName);
+      changed += func(nodeName);
     }
-    return pruned;
+    if (triggerUpdate && changed) {
+      this.emit('update');
+    }
+    return changed;
   }
 
   toJSON() {
