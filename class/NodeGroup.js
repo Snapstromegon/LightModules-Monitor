@@ -8,47 +8,59 @@ module.exports = class NodeGroup extends EventEmitter {
     this._nodes = {};
   }
 
-  isEmpty(){
+  isEmpty() {
     return Object.keys(this._nodes).length === 0;
+  }
+
+  clearNode(nodeName = '') {
+    let cleared = 0;
+    const node = this._nodes[nodeName];
+    if (node instanceof NodeGroup) {
+      cleared += node.clear(false);
+      delete this._nodes[nodeName];
+    } else {
+      node.clearTimeouts();
+      delete this._nodes[nodeName];
+      cleared++;
+    }
+    return cleared;
   }
 
   clear(triggerUpdate = true) {
     let cleared = 0;
-    for(const nodeName in this._nodes){
-      const node = this._nodes[nodeName];
-      if(node instanceof NodeGroup){
-        cleared += node.clear(false);
-        delete this._nodes[nodeName];
-      } else {
-        node.clearTimeouts();
-        delete this._nodes[nodeName];
-        cleared++;
-      }
+    for (const nodeName in this._nodes) {
+      cleared += this.clearNode(nodeName);
     }
-    if(triggerUpdate && cleared) {
+    if (triggerUpdate && cleared) {
       this.emit('update');
     }
     return cleared;
   }
 
-  prune(triggerUpdate = true) {
+  pruneNode(nodeName = '') {
     let pruned = 0;
-    for(const nodeName in this._nodes){
-      const node = this._nodes[nodeName];
-      if(node instanceof NodeGroup){
-        pruned += node.prune(false);
-        if(node.isEmpty()){
-          delete this._nodes[nodeName];
-        }
-      } else {
-        if(node.state != 'online'){
-          node.clearTimeouts();
-          delete this._nodes[nodeName];
-          pruned++;
-        }
+    const node = this._nodes[nodeName];
+    if (node instanceof NodeGroup) {
+      pruned += node.prune(false);
+      if (node.isEmpty()) {
+        delete this._nodes[nodeName];
+      }
+    } else {
+      if (node.state != 'online') {
+        node.clearTimeouts();
+        delete this._nodes[nodeName];
+        pruned++;
       }
     }
-    if(triggerUpdate && pruned) {
+    return pruned;
+  }
+
+  prune(triggerUpdate = true) {
+    let pruned = 0;
+    for (const nodeName in this._nodes) {
+      pruned += this.pruneNode(nodeName);
+    }
+    if (triggerUpdate && pruned) {
       this.emit('update');
     }
     return pruned;
@@ -59,15 +71,16 @@ module.exports = class NodeGroup extends EventEmitter {
       type: 'NodeGroup',
       name: this.name,
       nodes: this._nodes
-    }
+    };
   }
 
   execute(command, cb, name) {
+    const nodesToExecute = [];
     if (name) {
-      console.log(command,name);
-      
+      console.log(command, name);
+
       const node = this.findNodeForName(name);
-      if(node){
+      if (node) {
         node.execute(command, cb);
       }
     } else {
@@ -89,28 +102,38 @@ module.exports = class NodeGroup extends EventEmitter {
     return false;
   }
 
+  createMissingNode(path) {
+    const firstPart = path[0];
+    if (path.length > 1) {
+      const newNode = new NodeGroup(firstPart);
+      newNode.on('update', (...args) => this.emit('update', ...args));
+      this._nodes[firstPart] = newNode;
+      return this._nodes[firstPart].findNodeForPath(path.slice(1), true);
+    } else {
+      const newNode = new LightNode();
+      this._nodes[firstPart] = newNode;
+      newNode.on('update', (...args) => this.emit('update', ...args));
+      return this._nodes[firstPart];
+    }
+  }
+
   findNodeForPath(path, createMissing = false) {
-    if(path.length == 0){ return this; }
+    if (path.length == 0) {
+      return this;
+    }
     const firstPart = path[0];
     if (firstPart in this._nodes) {
       if (this._nodes[firstPart] instanceof NodeGroup) {
-        return this._nodes[firstPart].findNodeForPath(path.slice(1), createMissing);
+        return this._nodes[firstPart].findNodeForPath(
+          path.slice(1),
+          createMissing
+        );
       } else {
         return this._nodes[firstPart];
       }
     }
     if (createMissing) {
-      if (path.length > 1) {
-        const newNode = new NodeGroup(firstPart);
-        newNode.on('update', (...args) => this.emit('update', ...args));
-        this._nodes[firstPart] = newNode;
-        return this._nodes[firstPart].findNodeForPath(path.slice(1), createMissing);
-      } else {
-        const newNode = new LightNode();
-        this._nodes[firstPart] = newNode;
-        newNode.on('update', (...args) => this.emit('update', ...args));
-        return this._nodes[firstPart];
-      }
+      return this.createMissingNode(path);
     }
   }
 
@@ -120,4 +143,4 @@ module.exports = class NodeGroup extends EventEmitter {
     }
     return this.findNodeForPath(name.split('-'), createMissing);
   }
-}
+};

@@ -3,10 +3,10 @@ class LightNode extends NodeGroup {
     super(name, mainElem, asideElem);
 
     this.STATE_COLORS = {
-      'online': '#0f0',
-      'uncertain': '#ff0',
-      'offline': '#f00'
-    }
+      online: '#0f0',
+      uncertain: '#ff0',
+      offline: '#f00'
+    };
 
     this.state;
 
@@ -18,7 +18,7 @@ class LightNode extends NodeGroup {
       }
     };
 
-    this.info = {}
+    this.info = {};
 
     this.render();
   }
@@ -37,7 +37,9 @@ class LightNode extends NodeGroup {
           <p>${this.data.msg}</p>
         </div>
         <div class="actions">
-          <a href="javascript:command('update-pull?file=http://${window.location.hostname}/ucls/update/ESP12E_E131_DMX.bin', '${this.data.name}')">Upd pull</a>
+          <a href="javascript:command('update-pull?file=http://${
+            window.location.hostname
+          }/ucls/update/ESP12E_E131_DMX.bin', '${this.data.name}')">Upd pull</a>
           <a href="javascript:command('update', '${this.data.name}')">Update</a>
           <a href="http://${this.info.address}/dmx" target="_blank">DMX</a>
           <a href="javascript:command('test', '${this.data.name}')">LED-Test</a>
@@ -46,9 +48,15 @@ class LightNode extends NodeGroup {
     `;
     this.asideElem.innerHTML = `
       <div class="LightNode ${this.state}">
-        <h1 style="color: ${this.STATE_COLORS[this.state]}">${this.data.name}</h1>
-        <p style="color: hsl(${this.data.systemInfo.bat.perc}, 100%, 50%);">battery_std</p>
-        <p style="color: hsl(${this.data.systemInfo.rssi.perc}, 100%, 50%);">wifi</p>
+        <h1 style="color: ${this.STATE_COLORS[this.state]}">
+          ${this.data.name}
+        </h1>
+        <p style="color: hsl(${this.data.systemInfo.bat.perc}, 100%, 50%);">
+          battery_std
+        </p>
+        <p style="color: hsl(${this.data.systemInfo.rssi.perc}, 100%, 50%);">
+          wifi
+        </p>
       </div>
     `;
   }
