@@ -1,5 +1,6 @@
-class LightNode {
+class LightNode extends NodeGroup {
   constructor(name, mainElem, asideElem) {
+    super(name, mainElem, asideElem);
 
     this.STATE_COLORS = {
       'online': '#0f0',
@@ -7,12 +8,7 @@ class LightNode {
       'offline': '#f00'
     }
 
-    this.name = name;
     this.state;
-    this.mainElem = document.createElement('div');
-    mainElem.appendChild(this.mainElem);
-    this.asideElem = document.createElement('div');
-    asideElem.appendChild(this.asideElem);
 
     this.data = {
       dmx: {},
@@ -25,11 +21,6 @@ class LightNode {
     this.info = {}
 
     this.render();
-  }
-
-  delete(){
-    this.mainElem.parentNode.removeChild(this.mainElem);
-    this.asideElem.parentNode.removeChild(this.asideElem);
   }
 
   render() {

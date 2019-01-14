@@ -31,20 +31,11 @@ webClientMgr.on('server_command', (cmd, cb) => {
       process.exit();
       break;
     case 'clear':
-      cb(undefined, {
-        'type': 'server_execute',
-        'content': {
-          'text': `Cleared ${nodeMgr.clear()} Nodes`,
-          'node': 'Server'
-        }
-      });
-      nodeMgr.clear();
-      break;
     case 'prune':
       cb(undefined, {
         'type': 'server_execute',
         'content': {
-          'text': `Pruned ${nodeMgr.prune()} Nodes`,
+          'text': `${cmd} ${nodeMgr[cmd]()} Nodes`,
           'node': 'Server'
         }
       });

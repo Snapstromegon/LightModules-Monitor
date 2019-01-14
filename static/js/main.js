@@ -1,6 +1,14 @@
-let socket = new WebSocket(`ws://${window.location.hostname}${window.location.port? ':' + window.location.port : ''}/ws`);
+function connectWebSocket() {
+  socket = new WebSocket(
+    `ws://${window.location.hostname}${
+      window.location.port ? ':' + window.location.port : ''
+    }/ws`
+  );
+}
+let socket;
+connectWebSocket();
 socket.addEventListener('close', _ => {
-  setTimeout(_ => { socket = new WebSocket(`ws://${window.location.hostname}${window.location.port? ':' + window.location.port : ''}/ws`); }, 2000);
+  setTimeout(connectWebSocket, 2000);
 });
 
 socket.addEventListener('message', event => {
@@ -12,37 +20,44 @@ socket.addEventListener('message', event => {
     case 'execute':
     case 'server_execute':
       log(data.content.text, data.content.node);
-      
+
       break;
     default:
       console.log(data);
       break;
   }
-
 });
 
-const baseGroup = new NodeGroup('Modules', document.querySelector('main'), document.querySelector('aside'));
+const baseGroup = new NodeGroup(
+  'Modules',
+  document.querySelector('main'),
+  document.querySelector('aside')
+);
 
 function command(command, name) {
-  socket.send(JSON.stringify({
-    "type": 'command',
-    "content": {
-      "command": command,
-      "name": name
-    }
-  }));
+  socket.send(
+    JSON.stringify({
+      type: 'command',
+      content: {
+        command: command,
+        name: name
+      }
+    })
+  );
 }
 
 function serverCommand(command) {
-  socket.send(JSON.stringify({
-    "type": 'server_command',
-    "content": {
-      "command": command
-    }
-  }));
+  socket.send(
+    JSON.stringify({
+      type: 'server_command',
+      content: {
+        command: command
+      }
+    })
+  );
 }
 
-function log(msg, source){
+function log(msg, source) {
   const wrapper = document.createElement('div');
   wrapper.classList.add('logEntry');
   const date = new Date();
