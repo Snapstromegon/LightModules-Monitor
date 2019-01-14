@@ -24,6 +24,11 @@ class LightNode extends NodeGroup {
   }
 
   render() {
+    this.renderMain();
+    this.renderAside();
+  }
+
+  renderMain() {
     this.mainElem.innerHTML = `
       <div class="LightNode">
         <h1 style="color: ${this.STATE_COLORS[this.state]}">${this.name}</h1>
@@ -46,6 +51,9 @@ class LightNode extends NodeGroup {
         </div>
       </div>
     `;
+  }
+
+  renderAside() {
     this.asideElem.innerHTML = `
       <div class="LightNode ${this.state}">
         <h1 style="color: ${this.STATE_COLORS[this.state]}">

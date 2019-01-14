@@ -26,10 +26,7 @@ module.exports = class NodeGroup extends EventEmitter {
   }
 
   clear(triggerUpdate = true) {
-    let cleared = 0;
-    for (const nodeName in this._nodes) {
-      cleared += this.clearNode(nodeName);
-    }
+    let cleared = this.mapAllNodes(nodeName => this.clearNode(nodeName));
     if (triggerUpdate && cleared) {
       this.emit('update');
     }
@@ -52,12 +49,17 @@ module.exports = class NodeGroup extends EventEmitter {
   }
 
   prune(triggerUpdate = true) {
-    let pruned = 0;
-    for (const nodeName in this._nodes) {
-      pruned += this.pruneNode(nodeName);
-    }
+    let pruned = this.mapAllNodes(nodeName => this.pruneNode(nodeName));
     if (triggerUpdate && pruned) {
       this.emit('update');
+    }
+    return pruned;
+  }
+
+  mapAllNodes(func) {
+    let pruned = 0;
+    for (const nodeName in this._nodes) {
+      pruned += func(nodeName);
     }
     return pruned;
   }
