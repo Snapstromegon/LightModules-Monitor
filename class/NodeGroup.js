@@ -17,12 +17,11 @@ module.exports = class NodeGroup extends EventEmitter {
     const node = this._nodes[nodeName];
     if (node instanceof NodeGroup) {
       cleared += node.clear(false);
-      delete this._nodes[nodeName];
     } else {
       node.clearTimeouts();
-      delete this._nodes[nodeName];
       cleared++;
     }
+    delete this._nodes[nodeName];
     return cleared;
   }
 
@@ -42,15 +41,12 @@ module.exports = class NodeGroup extends EventEmitter {
     const node = this._nodes[nodeName];
     if (node instanceof NodeGroup) {
       pruned += node.prune(false);
-      if (node.isEmpty()) {
-        delete this._nodes[nodeName];
-      }
-    } else {
-      if (node.state != 'online') {
-        node.clearTimeouts();
-        delete this._nodes[nodeName];
-        pruned++;
-      }
+    } else if (node.state != 'online') {
+      node.clearTimeouts();
+      pruned++;
+    }
+    if (node.isEmpty() || node.state != 'online') {
+      delete this._nodes[nodeName];
     }
     return pruned;
   }
@@ -75,18 +71,17 @@ module.exports = class NodeGroup extends EventEmitter {
   }
 
   execute(command, cb, name) {
-    const nodesToExecute = [];
+    let nodesToExecute = {};
     if (name) {
       console.log(command, name);
 
       const node = this.findNodeForName(name);
-      if (node) {
-        node.execute(command, cb);
-      }
+      nodesToExecute['__DEFAULT__'] = node;
     } else {
-      for (const name in this._nodes) {
-        this._nodes[name].execute(command, cb);
-      }
+      nodesToExecute = this._nodes;
+    }
+    for (const name in nodesToExecute) {
+      this._nodes[name].execute(command, cb);
     }
   }
 
@@ -117,20 +112,24 @@ module.exports = class NodeGroup extends EventEmitter {
     }
   }
 
+  findChildNode(path, createMissing) {
+    const firstPart = path[0];
+    if (this._nodes[firstPart] instanceof NodeGroup) {
+      return this._nodes[firstPart].findNodeForPath(
+        path.slice(1),
+        createMissing
+      );
+    } else {
+      return this._nodes[firstPart];
+    }
+  }
+
   findNodeForPath(path, createMissing = false) {
     if (path.length == 0) {
       return this;
     }
-    const firstPart = path[0];
-    if (firstPart in this._nodes) {
-      if (this._nodes[firstPart] instanceof NodeGroup) {
-        return this._nodes[firstPart].findNodeForPath(
-          path.slice(1),
-          createMissing
-        );
-      } else {
-        return this._nodes[firstPart];
-      }
+    if (path[0] in this._nodes) {
+      return this.findChildNode(path, createMissing);
     }
     if (createMissing) {
       return this.createMissingNode(path);
