@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: mocha
+    versions:
+    - 8.2.1
+    - 8.3.0
+    - 8.3.2
+  - dependency-name: nock
+    versions:
+    - 13.0.10
+    - 13.0.11
+    - 13.0.6
+    - 13.0.7
+    - 13.0.8
+    - 13.0.9
+  - dependency-name: chai
+    versions:
+    - 4.3.0
+    - 4.3.1
