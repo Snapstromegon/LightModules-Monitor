@@ -1,11 +1,15 @@
-class LightNode extends NodeGroup {
+import BaseNode from "./BaseNode.js";
+
+export default class LightNode extends BaseNode {
   constructor(name, mainElem, asideElem) {
     super(name, mainElem, asideElem);
+    console.log("Hi")
 
     this.STATE_COLORS = {
-      online: '#0f0',
-      uncertain: '#ff0',
-      offline: '#f00'
+      undefined: "#fff",
+      online: "#0f0",
+      uncertain: "#ff0",
+      offline: "#f00",
     };
 
     this.state;
@@ -14,13 +18,14 @@ class LightNode extends NodeGroup {
       dmx: {},
       systemInfo: {
         bat: {},
-        rssi: {}
-      }
+        rssi: {},
+      },
     };
 
     this.info = {};
 
     this.render();
+    console.log("Hallo Welt", this);
   }
 
   render() {
@@ -29,6 +34,7 @@ class LightNode extends NodeGroup {
   }
 
   renderMain() {
+    console.log(this, this.state);
     this.mainElem.innerHTML = `
       <div class="LightNode">
         <h1 style="color: ${this.STATE_COLORS[this.state]}">${this.name}</h1>
@@ -82,7 +88,7 @@ class LightNode extends NodeGroup {
     const newJSON = JSON.stringify({
       data: data.data,
       info: data.info,
-      state: data.state
+      state: data.state,
     });
     if (this.rawDataJSON != newJSON) {
       this.updated();

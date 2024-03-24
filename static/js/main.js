@@ -1,3 +1,5 @@
+import NodeGroup from './class/NodeGroup.js';
+
 function connectWebSocket() {
   socket = new WebSocket(
     `ws://${window.location.hostname}${
@@ -56,6 +58,9 @@ function serverCommand(command) {
     })
   );
 }
+
+window.command = command;
+window.serverCommand = serverCommand;
 
 function log(msg, source) {
   const wrapper = document.createElement('div');
